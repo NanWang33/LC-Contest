@@ -29,3 +29,46 @@ At most 50000 calls will be made to set, snap, and get.
 0 <= index < length
 0 <= snap_id < (the total number of times we call snap())
 0 <= val <= 10^9
+
+
+
+class SnapshotArray {
+
+    private int version = -1;
+    private HashMap<Integer, HashMap<Integer, Integer>> map = new HashMap<Integer, HashMap<Integer, Integer>>();
+    private HashMap<Integer, Integer> changes = new HashMap<Integer, Integer>();
+    private int[] current;
+    
+    public SnapshotArray(int length) {
+        current = new int[length];
+    }
+    
+    public void set(int index, int val) {
+        changes.put(index, val);
+    }
+    
+    public int snap() {
+        version++;
+        
+        map.put(version, changes);
+        changes = new HashMap<Integer, Integer>();
+        return version;
+    }
+    
+    public int get(int index, int snap_id) {
+        while(snap_id >=0) {
+            HashMap<Integer, Integer> snap = map.get(snap_id);
+            if (snap.containsKey(index)) return snap.get(index);
+            snap_id--;
+        }
+        return 0;
+    }
+}
+
+/**
+ * Your SnapshotArray object will be instantiated and called as such:
+ * SnapshotArray obj = new SnapshotArray(length);
+ * obj.set(index,val);
+ * int param_2 = obj.snap();
+ * int param_3 = obj.get(index,snap_id);
+ */
