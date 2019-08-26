@@ -1,0 +1,102 @@
+1171. Remove Zero Sum Consecutive Nodes from Linked List
+Medium
+
+Given the head of a linked list, we repeatedly delete consecutive sequences of nodes that sum to 0 until there are no such sequences.
+
+After doing so, return the head of the final linked list.  You may return any such answer.
+
+ 
+
+(Note that in the examples below, all sequences are serializations of ListNode objects.)
+
+Example 1:
+
+Input: head = [1,2,-3,3,1]
+Output: [3,1]
+Note: The answer [1,2,1] would also be accepted.
+Example 2:
+
+Input: head = [1,2,3,-3,4]
+Output: [1,2,4]
+Example 3:
+
+Input: head = [1,2,3,-3,-2]
+Output: [1]
+ 
+
+Constraints:
+
+The given linked list will contain between 1 and 1000 nodes.
+Each node in the linked list has -1000 <= node.val <= 1000.
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+//     public ListNode removeZeroSumSublists(ListNode head) {
+//         if (head == null) return null;
+//         if (head.next == null && head.val == 0) return null;
+        
+//         List<ListNode> nodes = new ArrayList<ListNode>();
+//         List<Integer> sums = new ArrayList<Integer>();
+//         ListNode dump = new ListNode(0);
+//         dump.next = head;
+//         int sum = 0;
+//         ListNode index = dump;
+//         while (index != null) {
+//             sum += index.val;
+//             sums.add(sum);
+//             nodes.add(index);
+//             index = index.next;
+//         }
+//         nodes.add(null);
+//         for (int i = sums.size()-1; i >=0; i--) {
+//             int end = sums.get(i);
+//             int j;
+//             for (j = 0 ; j < i; j++) {
+//                 if (sums.get(j) == end) break;
+//             }
+//             if (j == i) continue;
+//             //j+1 to i should be removed
+//             nodes.get(j).next = nodes.get(i+1);
+            
+//             i = j;
+//         }
+//         return nodes.get(0).next;
+//     }
+    
+    public ListNode removeZeroSumSublists(ListNode head) {
+        if (head == null) return null;
+        if (head.next == null && head.val == 0) return null;
+        
+        List<Integer> sums = new ArrayList<Integer>();
+        ListNode dump = new ListNode(0);
+        dump.next = head;
+        int sum = 0;
+        ListNode index = dump;
+        while (index != null) {
+            sum += index.val;
+            sums.add(sum);
+            index = index.next;
+        }
+        
+        HashMap<Integer, ListNode> map = new HashMap<Integer, ListNode>();
+        index = dump;
+        for (int i = 0; i < sums.size(); i++) {
+            int val = sums.get(i);
+            ListNode node = map.get(val);
+            if (node == null) {
+                map.put(val, index);
+            } else {
+                node.next = index.next;
+            }
+            index = index.next;
+        }
+        return dump.next;
+    }
+}
