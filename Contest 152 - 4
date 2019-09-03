@@ -1,0 +1,140 @@
+1178. Number of Valid Words for Each Puzzle
+Hard
+
+With respect to a given puzzle string, a word is valid if both the following conditions are satisfied:
+word contains the first letter of puzzle.
+For each letter in word, that letter is in puzzle.
+For example, if the puzzle is "abcdefg", then valid words are "faced", "cabbage", and "baggage"; while invalid words are "beefed" (doesn't include "a") and "based" (includes "s" which isn't in the puzzle).
+Return an array answer, where answer[i] is the number of words in the given word list words that are valid with respect to the puzzle puzzles[i].
+ 
+
+Example :
+
+Input: 
+words = ["aaaa","asas","able","ability","actt","actor","access"], 
+puzzles = ["aboveyz","abrodyz","abslute","absoryz","actresz","gaswxyz"]
+Output: [1,1,3,2,4,0]
+Explanation:
+1 valid word for "aboveyz" : "aaaa" 
+1 valid word for "abrodyz" : "aaaa"
+3 valid words for "abslute" : "aaaa", "asas", "able"
+2 valid words for "absoryz" : "aaaa", "asas"
+4 valid words for "actresz" : "aaaa", "asas", "actt", "access"
+There're no valid words for "gaswxyz" cause none of the words in the list contains letter 'g'.
+ 
+
+Constraints:
+
+1 <= words.length <= 10^5
+4 <= words[i].length <= 50
+1 <= puzzles.length <= 10^4
+puzzles[i].length == 7
+words[i][j], puzzles[i][j] are English lowercase letters.
+Each puzzles[i] doesn't contain repeated characters.
+
+class Solution {
+//     TimeOut
+//     public List<Integer> findNumOfValidWords(String[] words, String[] puzzles) {
+//         int[][] wordsets = new int[words.length][26];
+//         int[][] puzzlesets = new int[puzzles.length][26];
+//         for (int i = 0; i < words.length; i++) {
+//             String word = words[i];
+//             for (char c : word.toCharArray()) {
+//                 wordsets[i][c - 'a'] = 1;
+//             }
+//         }
+//         char[] firsts = new char[puzzles.length];
+//         for (int i = 0; i < puzzles.length; i++) {
+//             String puzzle = puzzles[i];
+//             firsts[i] = puzzle.charAt(0);
+//             for (char c : puzzle.toCharArray()) {
+//                 puzzlesets[i][c - 'a'] = 1;
+//             }
+//         }
+        
+//         List<Integer> res = new ArrayList<Integer>();
+//         for (int i = 0; i < puzzles.length; i++) {
+//             int count = 0;
+//             for (int[] wset : wordsets) {
+//                 if (wset[firsts[i] - 'a'] != 1) continue;
+//                 boolean valid = true;
+//                 for (int j = 0; j < 26; j++) {
+//                     if (wset[j] == 1) {
+//                         if (puzzlesets[i][j] != 1) {
+//                             valid = false;
+//                             break;   
+//                         }
+//                     }
+//                 }
+//                 if (valid) count++;
+//             }
+//             res.add(count);
+//         }
+//         return res;
+//     }
+    
+public class Trie {
+	Trie[] next = new Trie[26];
+	int count = 0;
+}
+
+public List<Integer> findNumOfValidWords(String[] words, String[] puzzles) {
+	List<Integer> res = new ArrayList<>();
+	for (int i = 0; i < puzzles.length; i++) {
+		res.add(0);
+	}
+
+	Set<Character>[] sortedWords = getSortedChar(words);
+	Trie root = buildTrie(sortedWords);
+
+	Set<Character>[] sortedPuzzles = getSortedChar(puzzles);
+	for (int i = 0; i < puzzles.length; i++) {
+		res.set(i, findValidWords(root, sortedPuzzles[i], false, puzzles[i].charAt(0)));
+	}
+
+	return res;
+}
+
+private int findValidWords(Trie root, Set<Character> puzzle, boolean firstSeen, char firstChar) {
+	if (root == null) return 0;
+	int count = 0;
+	if (firstSeen) count += root.count;
+
+	for (char c : puzzle) {
+		if (firstChar == c) {
+			count += findValidWords(root.next[c - 'a'], puzzle, true, firstChar);
+		} else {
+			count += findValidWords(root.next[c - 'a'], puzzle, firstSeen, firstChar);
+		}
+	}
+	return count;
+}
+
+private Trie buildTrie(Set<Character>[] words) {
+	Trie root = new Trie();
+	for (int i = 0; i < words.length; i++) {
+		Trie current = root;
+		Set<Character> word = words[i];
+		for (char c : word) {
+			if (current.next[c - 'a'] == null) {
+				current.next[c - 'a'] = new Trie();
+			}
+			current = current.next[c - 'a'];
+		}
+		current.count++;
+	}
+	return root;
+}
+
+private TreeSet<Character>[] getSortedChar(String[] words) {
+	TreeSet<Character>[] treeSet = new TreeSet[words.length];
+	for (int i = 0; i < words.length; i++) {
+		char[] charArray = words[i].toCharArray();
+		treeSet[i] = new TreeSet<>();
+		for (char c : charArray) {
+			treeSet[i].add(c);
+		}
+	}
+	return treeSet;
+}
+}
