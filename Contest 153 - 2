@@ -1,0 +1,61 @@
+1185. Day of the Week
+Easy
+
+Given a date, return the corresponding day of the week for that date.
+
+The input is given as three integers representing the day, month and year respectively.
+
+Return the answer as one of the following values {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}.
+
+ 
+
+Example 1:
+
+Input: day = 31, month = 8, year = 2019
+Output: "Saturday"
+Example 2:
+
+Input: day = 18, month = 7, year = 1999
+Output: "Sunday"
+Example 3:
+
+Input: day = 15, month = 8, year = 1993
+Output: "Sunday"
+ 
+
+Constraints:
+
+The given dates are valid dates between the years 1971 and 2100.
+
+class Solution {
+    public String dayOfTheWeek(int day, int month, int year) {
+        int[] dayInMonth = new int[] {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        //start with 1971.1.1, which is a Friday
+        int days = 0;
+        for (int index = 1971; index < year; index++) {
+            days += leapYear(index) ? 366 : 365;
+        }
+        for (int index = 1; index < month; index++) {
+            if (leapYear(year) && index == 2) days += 29;
+            else days += dayInMonth[index-1];
+        }
+        days += day - 1;
+        
+        days = (days % 7 + 5 ) % 7;
+        switch(days) {
+            case 0: return "Sunday";
+            case 1: return "Monday";
+            case 2: return "Tuesday";
+            case 3: return "Wednesday";
+            case 4: return "Thursday";
+            case 5: return "Friday";
+            case 6: return "Saturday";
+        }
+        return "";
+    }
+    
+    private boolean leapYear(int year) {
+        if (year % 100 == 0) return year % 400 == 0;
+        return year % 4 == 0;
+    }
+}
