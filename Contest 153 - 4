@@ -55,7 +55,8 @@ class Solution {
         newarr1[n+1] = Integer.MAX_VALUE;
         newarr1[0] = Integer.MIN_VALUE;
         arr1 = newarr1;
-            
+        
+	//dp, similar as LIS Leetcode 300
         int[] dp = new int[n+2];
         Arrays.fill(dp, Integer.MAX_VALUE);
         //dp[i] -> answer to change array 0 to i
